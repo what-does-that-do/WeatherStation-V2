@@ -105,6 +105,9 @@ export function ExportForm() {
         setHost("https://weatherapi.whatdoesthatdo.dev");
         console.log("Using tunnel.")
     }
+    }).catch((error) => {
+      console.log("Using tunnel - error with local.");
+      setHost("https://weatherapi.whatdoesthatdo.dev");
     })
 }, []);
 

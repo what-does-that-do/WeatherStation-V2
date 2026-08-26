@@ -227,6 +227,9 @@ export default function Dashboard() {
         connectSSE("https://weatherapi.whatdoesthatdo.dev");
         console.log("Using tunnel.")
       }
+    }).catch((error) => {
+      console.log("Using tunnel - error with local.");
+      connectSSE("https://weatherapi.whatdoesthatdo.dev");
     })
   }, []);
 
