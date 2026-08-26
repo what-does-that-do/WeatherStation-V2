@@ -102,7 +102,7 @@ export function ExportForm() {
         setHost("http://weatherstation.local:8000")
         console.log("Using local.")
     } else {
-        setHost("https://weather.whatdoesthatdo.dev/api");
+        setHost("https://weatherapi.whatdoesthatdo.dev");
         console.log("Using tunnel.")
     }
     })

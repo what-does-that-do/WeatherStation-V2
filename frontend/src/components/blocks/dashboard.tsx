@@ -224,7 +224,7 @@ export default function Dashboard() {
         connectSSE("http://weatherstation.local:8000");
         console.log("Using local.")
       } else {
-        connectSSE("https://weather.whatdoesthatdo.dev/api");
+        connectSSE("https://weatherapi.whatdoesthatdo.dev");
         console.log("Using tunnel.")
       }
     })
