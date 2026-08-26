@@ -4,7 +4,11 @@ from datetime import datetime, timedelta
 from db_config import load_config
 
 class Database:
-    def __init__(self, config=None, user="server"):
+    def __init__(self, config=None, user="server", logger=None):
+        self.logger = logger
+
+        if self.logger:
+            self.logger.info("Connecting to db as user: "+user)
         # Load config from file if not provided
         if not config:
             config = load_config(section=user)
@@ -15,8 +19,9 @@ class Database:
 
         self.create_tables()
 
+        self.logger.info("Connected to db")
+
     def create_tables(self):
-        # TODO: Use timestamp instead...
         tables = (
             """CREATE TABLE IF NOT EXISTS sensordata (
                 timestamp TIMESTAMP PRIMARY KEY NOT NULL,
@@ -41,7 +46,8 @@ class Database:
             
             self.conn.commit()
         except:
-            print("Error attempting to create tables - likely insufficient permissions. Cancelled transaction.")
+            if self.logger:
+                self.logger.warning("Error creating tables, likely insufficient permissions. Rolled back.")
             self.conn.rollback()
 
     def add_weather_record(self, weather: Weather, timestamp: str = None, commit: bool = True) -> None:
@@ -130,7 +136,6 @@ class Database:
         sensorList = sensorList[:-2]
 
         # run query and get result
-        print(f"Tried: SELECT {sensorList} FROM sensordata WHERE timestamp >= {dateFrom} AND timestamp <= {dateTo}")
         self.cursor.execute(f"SELECT {sensorList} FROM sensordata WHERE timestamp >= %s AND timestamp <= %s ORDER BY timestamp ASC", (dateFrom, dateTo))
         result = self.cursor.fetchall()
 

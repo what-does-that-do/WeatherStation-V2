@@ -9,6 +9,11 @@ from datetime import datetime
 from openpyxl import Workbook
 from os import mkdir, path
 
+from logger import Logger
+
+log = Logger("server")
+log.info("Started.")
+
 app = FastAPI()
 
 app.add_middleware(
@@ -19,13 +24,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-db = Database()
+db = Database(user="server", logger=log)
+
+@app.get("/")
+async def index():
+    log.info("Request to /")
+    return "WeatherStation API"
 
 @app.get("/sse")
 async def sse_endpoint():
+    log.info("Request to /sse")
+
     async def event_generator():
         r = aioredis.Redis(host='localhost', port=6379, db=0)
         pubsub = r.pubsub()
+        log.info("Subscribed to sse.")
         await pubsub.subscribe('live')
         
         try:
@@ -35,18 +48,19 @@ async def sse_endpoint():
                     # Pushes event to client instantly when Redis receives it
                     yield f"data:{data}\n\n"
         finally:
+            log.info("Unsubscribe from sse.")
             await pubsub.unsubscribe('weather_updates')
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 @app.get("/export_excel")
 def export_excel(dateFrom: str, dateTo: str, sensors: str):
+    log.info("Request to /export_excel. Received args: dateFrom:"+dateFrom+"& dateTo:"+dateTo+"& sensors:"+sensors)
     # TODO: sql injection risk.
     data = db.get_weather_data(dateFrom, dateTo, sensors.split(","))
     if data == None:
+        log.error("No data found in database for export.")
         raise HTTPException(status_code=422, detail="No data within specified timeframe.") 
-
-    print("Writing to excel file...")
 
     # Format the data into a spreadsheet
     wb = Workbook()
@@ -76,15 +90,18 @@ def export_excel(dateFrom: str, dateTo: str, sensors: str):
     # write spreadsheet to tmp (deleted on reboot)
     if not path.exists("/tmp/weatherstation"):
         mkdir("/tmp/weatherstation/")
-    
+
     fpath = "/tmp/weatherstation/weatherstation_export_"+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+".xlsx"
+    log.debug("Export file written to "+fpath)
     wb.save(fpath)
 
+    log.info("Export success")
     return str(fpath.split("/")[-1])
 
 @app.get("/get_file/")
 def get_file(file: str):
     file = file.replace("\"", "")
-    print("Returning", "/tmp/weatherstation/"+file)
+
+    log.info("Returned file "+"/tmp/weatherstation/"+file)
     # return files from temp
     return FileResponse("/tmp/weatherstation/"+file, filename=file)

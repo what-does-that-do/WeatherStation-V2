@@ -1,5 +1,0 @@
-psycopg
-redis
-weatherhat
-fastAPI
-openpyxl

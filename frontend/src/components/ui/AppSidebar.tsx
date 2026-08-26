@@ -71,7 +71,9 @@ export default function AppSidebar({ children, title }: AppSidebarProps) {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
-          <SidebarFooter />
+          <SidebarFooter>
+            <p id="connmethod">Connecting...</p>
+          </SidebarFooter>
         </Sidebar>
 
         <SidebarInset className="flex-1">

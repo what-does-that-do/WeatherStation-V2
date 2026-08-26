@@ -72,20 +72,19 @@ export default function Dashboard() {
   const [values, setValues] = useState<Record<string,number>>({});
   const [timeGreeting, setTimeGreeting] = useState<string>("Hello.");
   const [valueExp, setValueExp] = useState({
-  temperature: { colour: "", desc: "", isWarning: false },
-  humidity: { colour: "", desc: "", isWarning: false },
-  wind_speed: { colour: "", desc: "", isWarning: false },
-  wind_gust: { colour: "", desc: "", isWarning: false },
-  precipitation_total_12: { colour: "", desc: "", isWarning: false },
-  precipitation_total_24: { colour: "", desc: "", isWarning: false },
-  precipitation_rate: { colour: "", desc: "", isWarning: false },
-  pressure: { colour: "", desc: "", isWarning: false },
-  dew_point: { colour: "", desc: "", isWarning: false },
-});
+    temperature: { colour: "", desc: "", isWarning: false },
+    humidity: { colour: "", desc: "", isWarning: false },
+    wind_speed: { colour: "", desc: "", isWarning: false },
+    wind_gust: { colour: "", desc: "", isWarning: false },
+    precipitation_total_12: { colour: "", desc: "", isWarning: false },
+    precipitation_total_24: { colour: "", desc: "", isWarning: false },
+    precipitation_rate: { colour: "", desc: "", isWarning: false },
+    pressure: { colour: "", desc: "", isWarning: false },
+    dew_point: { colour: "", desc: "", isWarning: false },
+  });
 
-
-  useEffect(() => {
-    const sse = new EventSource("http://"+window.location.hostname+":8000/sse");
+  function connectSSE(url: string) {
+    const sse = new EventSource(url+"/sse");
     sse.onmessage = e => {
       setIsConnecting(false);
 
@@ -217,6 +216,18 @@ export default function Dashboard() {
       }
     };
     return () => sse.close();
+  };
+
+  useEffect(() => {
+    fetch("http://weatherstation.local:8000/").then((response) => {
+      if (response.ok) {
+        connectSSE("http://weatherstation.local:8000");
+        console.log("Using local.")
+      } else {
+        connectSSE("https://weather.whatdoesthatdo.dev/api");
+        console.log("Using tunnel.")
+      }
+    })
   }, []);
 
   return (

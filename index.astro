@@ -17,7 +17,8 @@
 	</body>
 </html>
 <script>
-	let sse_url = "http://"+window.location.hostname+":8000/sse"
+	const host = "weatherstation.local";
+	let sse_url = "http://"+host+":8000/sse"
 	const evtSource = new EventSource(sse_url);
 	console.log("Connecting to SSE feed at: "+sse_url);
 

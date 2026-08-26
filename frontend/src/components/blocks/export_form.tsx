@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import React, {useEffect} from "react";
 import { addDays, format } from "date-fns"
 import { IconCalendar, IconCloud, IconCloudRain, IconDroplet, IconDroplets, IconFileAlert, IconFileDownload, IconInfoCircle, IconMist, IconNavigation, IconSnowflake, IconTemperature, IconWind, IconWindsock } from "@tabler/icons-react"
 import { type DateRange } from "react-day-picker"
@@ -46,6 +46,7 @@ export function ExportForm() {
   const [isExporting, setIsExporting] = React.useState<boolean>(false);
   const [isFinished, setIsFinished] = React.useState<boolean>(false);
   const [isError, setIsError] = React.useState<boolean>(false);
+  const [host, setHost] = React.useState<string>("");
 
   const dateFrom = date?.from ? format(date.from, "yyyy-MM-dd") + " 00:00:00" : "";
   const dateTo = date?.to ? format(date.to, "yyyy-MM-dd") + " 23:59:59" : dateFrom;
@@ -56,8 +57,8 @@ export function ExportForm() {
 
   function send_export_request() {
     setIsFinished(false);
-    const host = window.location.hostname.split(":")[0];
-    const url = new URL(`http://${host}:8000/export_excel`);
+    // const host = window.location.hostname.split(":")[0];
+    const url = new URL(`${host}/export_excel`);
 
     url.searchParams.set("dateFrom", dateFrom);
     url.searchParams.set("dateTo", dateTo);
@@ -79,7 +80,7 @@ export function ExportForm() {
         return response.text();
     })
     .then((text) => {
-        const fileUrl = new URL(`http://${host}:8000/get_file`);
+        const fileUrl = new URL(`${host}/get_file`);
         fileUrl.searchParams.set("file", text);
         document.getElementById("downloader").src = fileUrl;
         setIsFinished(true);
@@ -94,6 +95,18 @@ export function ExportForm() {
         setIsExporting(false);
     });
   }
+
+  useEffect(() => {
+    fetch("http://weatherstation.local:8000/").then((response) => {
+    if (response.ok) {
+        setHost("http://weatherstation.local:8000")
+        console.log("Using local.")
+    } else {
+        setHost("https://weather.whatdoesthatdo.dev/api");
+        console.log("Using tunnel.")
+    }
+    })
+}, []);
 
   return (
     <div className="w-100">
