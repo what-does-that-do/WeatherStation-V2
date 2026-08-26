@@ -39,7 +39,7 @@ const progressColourClasses: Record<string, string> = {
 
 export default function DataCard({ Icon, sensor, value, unit, progress, desc, colour, isWarning, doubleWidth = false }: { Icon: ReactNode; sensor: string; value: number; unit: string; progress: number; desc: string; colour: string; isWarning: boolean; doubleWidth?: boolean }) {
   return (
-    <Card className={`w-[250px] m-2 ${(isWarning == true) && " bg-orange-200"}`}>
+    <Card className={`w-full md:w-[250px] m-2 ${(isWarning == true) && " bg-orange-200"}`}>
         <CardHeader>
             <CardTitle>{(isWarning == true) ? <IconAlertTriangle className="inline" /> : Icon} {sensor}</CardTitle>
         </CardHeader>
