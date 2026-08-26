@@ -84,7 +84,7 @@ export default function Dashboard() {
   });
 
   function connectSSE(url: string) {
-    const sse = new EventSource(url+"/sse");
+    const sse = new EventSource(url+"/sse", {withCredentials: true});
     sse.onmessage = e => {
       setIsConnecting(false);
 

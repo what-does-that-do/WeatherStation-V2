@@ -68,7 +68,7 @@ export function ExportForm() {
     setIsExporting(true);
     setIsError(false);
 
-    fetch(url.toString())
+    fetch(url.toString(), {credentials: 'include'})
     .then((response) => {
         // Our handler throws an error if the request did not succeed.
         if (!response.ok) {
