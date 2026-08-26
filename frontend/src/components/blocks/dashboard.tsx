@@ -84,7 +84,7 @@ export default function Dashboard() {
   });
 
   function connectSSE(url: string) {
-    const sse = new EventSource(url+"/sse");
+    const sse = new EventSource(url+"/sse", {withCredentials: true});
     sse.onmessage = e => {
       setIsConnecting(false);
 
@@ -224,9 +224,12 @@ export default function Dashboard() {
         connectSSE("http://weatherstation.local:8000");
         console.log("Using local.")
       } else {
-        connectSSE("https://weather.whatdoesthatdo.dev/api");
+        connectSSE("https://weatherapi.whatdoesthatdo.dev");
         console.log("Using tunnel.")
       }
+    }).catch((error) => {
+      console.log("Using tunnel - error with local.");
+      connectSSE("https://weatherapi.whatdoesthatdo.dev");
     })
   }, []);
 
@@ -251,10 +254,10 @@ export default function Dashboard() {
 
           <div className="flex flex-wrap -m-2 max-w-[1100px] mt-2">
             <StaticCard Icon={<IconRadar className="inline" />} title="Radar" link="https://www.windy.com/-Weather-radar-radar?radar,52.166,0.503,10" >
-              <iframe width="450" height="300" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=mph&zoom=9&overlay=radar&product=radar&level=surface&lat=52.241&lon=0.344"></iframe>
+              <iframe className="w-full h-[350px]" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=mph&zoom=9&overlay=radar&product=radar&level=surface&lat=52.241&lon=0.344"></iframe>
             </StaticCard>
             <StaticCard Icon={<IconBolt className="inline" />} title="Lightning" link="https://www.lightningmaps.org/#m=oss;t=3;s=0;o=0;b=0.00;ts=0;y=52.1597;x=0.4515;z=10;d=2;dl=2;dc=0;">
-              <iframe src="https://map.blitzortung.org/index.php?interactive=1&NavigationControl=0&FullScreenControl=0&Cookies=0&InfoDiv=0&MenuButtonDiv=1&ScaleControl=1&MapStyle=2#8/52.241/0.344" width="450" height="300"></iframe> 
+              <iframe className="w-full h-[350px]" src="https://map.blitzortung.org/index.php?interactive=1&NavigationControl=0&FullScreenControl=0&Cookies=0&InfoDiv=0&MenuButtonDiv=1&ScaleControl=1&MapStyle=2#8/52.241/0.344"></iframe> 
             </StaticCard>
           </div>
           

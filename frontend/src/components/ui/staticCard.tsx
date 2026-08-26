@@ -11,7 +11,7 @@ import { IconExternalLink } from "@tabler/icons-react";
 
 export default function StaticCard({Icon, title, link, children}: {Icon: ReactNode; title: string; link: string; children?: ReactNode;}) {
         return (
-            <Card className="w-[500px] m-2">
+            <Card className="w-full md:w-[500px] m-2">
                 <CardHeader>
                     <div className="flex flex-row">
                         <CardTitle>{Icon} {title}</CardTitle>

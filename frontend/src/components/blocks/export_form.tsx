@@ -68,7 +68,7 @@ export function ExportForm() {
     setIsExporting(true);
     setIsError(false);
 
-    fetch(url.toString())
+    fetch(url.toString(), {credentials: 'include'})
     .then((response) => {
         // Our handler throws an error if the request did not succeed.
         if (!response.ok) {
@@ -102,9 +102,12 @@ export function ExportForm() {
         setHost("http://weatherstation.local:8000")
         console.log("Using local.")
     } else {
-        setHost("https://weather.whatdoesthatdo.dev/api");
+        setHost("https://weatherapi.whatdoesthatdo.dev");
         console.log("Using tunnel.")
     }
+    }).catch((error) => {
+      console.log("Using tunnel - error with local.");
+      setHost("https://weatherapi.whatdoesthatdo.dev");
     })
 }, []);
 

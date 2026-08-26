@@ -1,0 +1,8 @@
+{
+	"name": "weatherstation",
+	// Set this to today's date
+	"compatibility_date": "2026-08-26",
+	"assets": {
+		"directory": "./dist"
+	}
+}
