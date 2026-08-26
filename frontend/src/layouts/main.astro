@@ -1,0 +1,20 @@
+---
+import "@/styles/global.css"
+import AppSidebar from "@/components/ui/AppSidebar"
+
+const title = Astro.props.title;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} - Weather Station</title>
+  </head>
+  <body>
+    <AppSidebar title={title} client:load>
+      <slot />
+    </AppSidebar>
+  </body>
+</html>

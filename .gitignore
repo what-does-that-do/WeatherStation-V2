@@ -1,0 +1,24 @@
+backend/.venv/
+backend/__pycache__/
+backend/database.ini
+backend/test.py
+
+frontend/node_modules/
+# build output
+frontend/dist/
+# generated types
+frontend/.astro/
+
+# logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# environment variables
+frontend/.env*
+
+# macOS-specific files
+.DS_Store
+
+.jj/

@@ -1,0 +1,13 @@
+---
+import Layout from "@/layouts/main.astro"
+import {ExportForm} from "@/components/blocks/export_form"
+---
+
+<Layout title="Export">
+  <h1 class="font-heading text-5xl text-center">Export Data</h1>
+  <div class="flex flex-row">
+    <div class="grow" />
+    <ExportForm client:load />
+    <div class="grow" />
+  </div>
+</Layout>
