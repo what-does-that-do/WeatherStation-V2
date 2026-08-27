@@ -72,7 +72,6 @@ export default function AppSidebar({ children, title }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
-            <p id="connmethod">Connecting...</p>
           </SidebarFooter>
         </Sidebar>
 
