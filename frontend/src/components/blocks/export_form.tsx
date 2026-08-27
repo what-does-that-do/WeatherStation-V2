@@ -81,16 +81,10 @@ export function ExportForm() {
         return response.text();
     })
     .then((text) => {
-        const fileUrl = new URL(`${host}/get_file`);
+        // files must be served over https (grr!)
+        const fileUrl = new URL("https://weatherapi.whatdoesthatdo.dev/get_file");
         fileUrl.searchParams.set("file", text);
         setDownloadUrl(fileUrl.toString());
-
-        // locally served files mix protocols, so retrieve the file in new tab if local.
-        if (fileUrl.protocol == "http:") {
-            window.open(fileUrl, "_blank").focus();
-        } else {
-            document.getElementById("downloader").src = fileUrl;
-        }
         
         setIsFinished(true);
 
