@@ -143,7 +143,7 @@ export default function Dashboard() {
           vep[sensor] = valueExpMap.humidity[id];
           setValueExp(vep);
         } else if (sensor.includes("precipitation_total")) {
-          const id = Math.floor((data[sensor] + 5) / 10) + 1
+          let id = Math.floor((data[sensor] + 5) / 10) + 1
           if (data[sensor] <= 0) {
             id = 0;
           } else if (id >= valueExpMap.precipitation.length) {
