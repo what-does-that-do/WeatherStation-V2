@@ -47,6 +47,7 @@ export function ExportForm() {
   const [isFinished, setIsFinished] = React.useState<boolean>(false);
   const [isError, setIsError] = React.useState<boolean>(false);
   const [host, setHost] = React.useState<string>("");
+  const [downloadUrl, setDownloadUrl] = React.useState<string>("");
 
   const dateFrom = date?.from ? format(date.from, "yyyy-MM-dd") + " 00:00:00" : "";
   const dateTo = date?.to ? format(date.to, "yyyy-MM-dd") + " 23:59:59" : dateFrom;
@@ -80,9 +81,11 @@ export function ExportForm() {
         return response.text();
     })
     .then((text) => {
-        const fileUrl = new URL(`${host}/get_file`);
+        // files must be served over https (grr!)
+        const fileUrl = new URL("https://weatherapi.whatdoesthatdo.dev/get_file");
         fileUrl.searchParams.set("file", text);
-        document.getElementById("downloader").src = fileUrl;
+        setDownloadUrl(fileUrl.toString());
+        
         setIsFinished(true);
 
         // allow the browser to fetch the file
@@ -118,7 +121,7 @@ export function ExportForm() {
                 <IconFileDownload />
                 <AlertTitle>Export Complete</AlertTitle>
                 <AlertDescription>
-                Your file will now start downloading.
+                Your file will now start downloading. If it doesn't, <a href={downloadUrl} target="_blank">click here</a>.
                 </AlertDescription>
             </Alert>
         }
