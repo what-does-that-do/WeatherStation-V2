@@ -45,9 +45,9 @@ while True:
                 "dew_point": int(round(station.dewpoint, 0)),
                 "pressure": int(station.pressure),
                 "humidity": int(round(station.humidity, 0)),
-                "precipitation_total_12": round(precip_total_12, 2),
-                "precipitation_total_24": round(precip_total_24, 2),
-                "precipitation_rate": round(precip_rate, 2),
+                "precipitation_total_12": round(precip_total_12, 1),
+                "precipitation_total_24": round(precip_total_24, 1),
+                "precipitation_rate": round(precip_rate, 1),
                 "wind_gust": round(wind_gust, 1),
             }))
 

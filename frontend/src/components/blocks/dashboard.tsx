@@ -2,8 +2,20 @@ import React, {useEffect, useState} from "react";
 import DataCard from "../ui/dataCard";
 import { Spinner } from "../ui/spinner";
 
-import { IconTemperature, IconWindsock, IconWind, IconMist, IconCloudRain, IconDroplet, IconDroplets, IconCloud, IconSnowflake, IconRadar, IconBolt } from '@tabler/icons-react';
+import { IconTemperature, IconWindsock, IconWind, IconMist, IconCloudRain, IconDroplet, IconDroplets, IconCloud, IconSnowflake, IconRadar, IconBolt, IconNavigation } from '@tabler/icons-react';
 import StaticCard from "../ui/staticCard";
+
+const degreesToDirections = {
+  0: "N",
+  45: "NE",
+  90: "E",
+  135: "SE",
+  180: "S",
+  225: "SW",
+  270: "W",
+  315: "NW",
+  360: "N"
+}
 
 const valueExpMap = {
   "temperature": [
@@ -26,6 +38,17 @@ const valueExpMap = {
     {"colour": "orange", "desc": "V. Strong Wind"},
     {"colour": "red", "desc": "Gales"},
     {"colour": "maroon", "desc": "Severe Gales", "isWarning": true}
+  ],
+  "wind_direction": [
+    {"colour": "black", "desc": "North"},
+    {"colour": "black", "desc": "North East"},
+    {"colour": "black", "desc": "East"},
+    {"colour": "black", "desc": "South East"},
+    {"colour": "black", "desc": "South"},
+    {"colour": "black", "desc": "South West"},
+    {"colour": "black", "desc": "West"},
+    {"colour": "black", "desc": "North West"},
+    {"colour": "black", "desc": "North"},
   ],
   "humidity": [
     {"colour": "orange", "desc": "Dry"},
@@ -76,6 +99,7 @@ export default function Dashboard() {
     humidity: { colour: "", desc: "", isWarning: false },
     wind_speed: { colour: "", desc: "", isWarning: false },
     wind_gust: { colour: "", desc: "", isWarning: false },
+    wind_direction: { colour: "", desc: "", isWarning: false },
     precipitation_total_12: { colour: "", desc: "", isWarning: false },
     precipitation_total_24: { colour: "", desc: "", isWarning: false },
     precipitation_rate: { colour: "", desc: "", isWarning: false },
@@ -118,7 +142,7 @@ export default function Dashboard() {
           const vep = valueExp;
           vep["temperature"] = valueExpMap.temperature[id];
           setValueExp(vep);
-        } else if (sensor.includes("wind")) {
+        } else if ((sensor.includes("wind")) && (sensor != "wind_direction")) {
           let id = Math.floor(data[sensor] / 10);
 
           if (id < 0) {
@@ -129,6 +153,12 @@ export default function Dashboard() {
           
           const vep = valueExp;
           vep[sensor] = valueExpMap.wind[id];
+          setValueExp(vep);
+        } else if (sensor == "wind_direction") {
+          const id = data[sensor] / 45;
+          
+          const vep = valueExp;
+          vep[sensor] = valueExpMap.wind_direction[id];
           setValueExp(vep);
         } else if (sensor == "humidity") {
           let id = 1;
@@ -243,6 +273,7 @@ export default function Dashboard() {
             <DataCard Icon={<IconTemperature className="inline" />} sensor="Temperature" value={ values.temperature ?? 0} unit="°C" progress={ ((values.temperature + 5) / 40) * 100 ?? 0} desc={valueExp.temperature.desc} colour={valueExp.temperature.colour} isWarning={valueExp.temperature.isWarning} />
             <DataCard Icon={<IconWindsock className="inline" />} sensor="Wind Speed" value={ values.wind_speed ?? 0} unit="mph" progress={ (values.wind_speed / 50) * 100 ?? 0} desc={valueExp.wind_speed.desc} colour={valueExp.wind_speed.colour} isWarning={valueExp.wind_speed.isWarning} />
             <DataCard Icon={<IconWind className="inline" />} sensor="Wind Gust" value={ values.wind_gust ?? 0} unit="mph" progress={ (values.wind_gust / 50) * 100 ?? 0} desc={valueExp.wind_gust.desc} colour={valueExp.wind_gust.colour} isWarning={valueExp.wind_gust.isWarning} />
+            <DataCard Icon={<IconNavigation className="inline" />} sensor="Wind Direction" value={ degreesToDirections[values.wind_direction] ?? 0} unit="from" progress={ (values.wind_direction / 360) * 100 ?? 0} desc={valueExp.wind_direction.desc} colour={valueExp.wind_direction.colour} isWarning={false} />
             <DataCard Icon={<IconMist className="inline" />} sensor="Humidity" value={ values.humidity ?? 0} unit="%" progress={ values.humidity ?? 0} desc={valueExp.humidity.desc} colour={valueExp.humidity.colour} />
             <DataCard Icon={<IconDroplet className="inline" />} sensor="Precipitation Total 12h" value={ values.precipitation_total_12 ?? 0} unit="mm" progress={ values.precipitation_total_12 * 5 ?? 0} desc={valueExp.precipitation_total_12.desc} colour={valueExp.precipitation_total_12.colour} isWarning={valueExp.precipitation_total_12.isWarning} />
             <DataCard Icon={<IconDroplets className="inline" />} sensor="Precipitation Total 24h" value={ values.precipitation_total_24 ?? 0} unit="mm" progress={ values.precipitation_total_24 * 5 ?? 0} desc={valueExp.precipitation_total_24.desc} colour={valueExp.precipitation_total_24.colour} isWarning={valueExp.precipitation_total_24.isWarning} />

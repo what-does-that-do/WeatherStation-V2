@@ -85,11 +85,11 @@ class Database:
 
         return total
 
-    def get_precipitation_rate(self, minutesAccuracy:int = 5) -> float:
+    def get_precipitation_rate(self, minutesAccuracy:int = 10) -> float:
         """Gets an estimated precipitation speed in mm/hour.
 
         Args:
-            minutesAccuracy (int, optional): Minutes of data to collect to scale up. Defaults to 5.
+            minutesAccuracy (int, optional): Minutes of data to collect to scale up. Defaults to 10.
 
         Returns:
             float: Precipitation rate in mm/hour.
