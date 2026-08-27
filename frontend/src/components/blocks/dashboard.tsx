@@ -91,6 +91,7 @@ const valueExpMap = {
 
 export default function Dashboard() {
   const [isConnecting, setIsConnecting] = useState<boolean>(true);
+  const [connectingMsg, setConnectingMsg] = useState<string>("Connecting...");
 
   const [values, setValues] = useState<Record<string,number>>({});
   const [timeGreeting, setTimeGreeting] = useState<string>("Hello.");
@@ -109,6 +110,11 @@ export default function Dashboard() {
 
   function connectSSE(url: string) {
     const sse = new EventSource(url+"/sse", {withCredentials: true});
+
+    sse.onopen = e => {
+      setConnectingMsg("Awaiting data...");
+    }
+
     sse.onmessage = e => {
       setIsConnecting(false);
 
@@ -151,7 +157,7 @@ export default function Dashboard() {
             id = valueExpMap.wind.length - 1;
           }
           
-          const vep = valueExp;
+          const vep = valueAExp;
           vep[sensor] = valueExpMap.wind[id];
           setValueExp(vep);
         } else if (sensor == "wind_direction") {
@@ -250,14 +256,17 @@ export default function Dashboard() {
   useEffect(() => {
     fetch("http://weatherstation.local:8000/").then((response) => {
       if (response.ok) {
+        setConnectingMsg("Connecting locally...");
         connectSSE("http://weatherstation.local:8000");
         console.log("Using local.")
       } else {
+        setConnectingMsg("Connecting remotely...");
         connectSSE("https://weatherapi.whatdoesthatdo.dev");
         console.log("Using tunnel.")
       }
     }).catch((error) => {
       console.log("Using tunnel - error with local.");
+      setConnectingMsg("Connecting remotely...")
       connectSSE("https://weatherapi.whatdoesthatdo.dev");
     })
   }, []);
@@ -268,7 +277,7 @@ export default function Dashboard() {
         <div className="grow" />
         <div className="">
           <h1 className="text-5xl text-center font-heading">{timeGreeting}</h1>
-          <p className={`text-center ${!isConnecting && "hidden"}`}><Spinner className="inline size-5" role="status" /> Connecting...</p>
+          <p className={`text-center ${!isConnecting && "hidden"}`}><Spinner className="inline size-5" role="status" /> {connectingMsg}</p>
           <div className={`flex flex-wrap -m-2 max-w-[1100px] mt-2 ${isConnecting && "hidden"}`}>
             <DataCard Icon={<IconTemperature className="inline" />} sensor="Temperature" value={ values.temperature ?? 0} unit="°C" progress={ ((values.temperature + 5) / 40) * 100 ?? 0} desc={valueExp.temperature.desc} colour={valueExp.temperature.colour} isWarning={valueExp.temperature.isWarning} />
             <DataCard Icon={<IconWindsock className="inline" />} sensor="Wind Speed" value={ values.wind_speed ?? 0} unit="mph" progress={ (values.wind_speed / 50) * 100 ?? 0} desc={valueExp.wind_speed.desc} colour={valueExp.wind_speed.colour} isWarning={valueExp.wind_speed.isWarning} />
