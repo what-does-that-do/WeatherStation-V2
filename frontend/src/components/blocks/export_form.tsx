@@ -47,6 +47,7 @@ export function ExportForm() {
   const [isFinished, setIsFinished] = React.useState<boolean>(false);
   const [isError, setIsError] = React.useState<boolean>(false);
   const [host, setHost] = React.useState<string>("");
+  const [downloadUrl, setDownloadUrl] = React.useState<string>("");
 
   const dateFrom = date?.from ? format(date.from, "yyyy-MM-dd") + " 00:00:00" : "";
   const dateTo = date?.to ? format(date.to, "yyyy-MM-dd") + " 23:59:59" : dateFrom;
@@ -82,7 +83,15 @@ export function ExportForm() {
     .then((text) => {
         const fileUrl = new URL(`${host}/get_file`);
         fileUrl.searchParams.set("file", text);
-        document.getElementById("downloader").src = fileUrl;
+        setDownloadUrl(fileUrl.toString());
+
+        // locally served files mix protocols, so retrieve the file in new tab if local.
+        if (fileUrl.protocol == "http:") {
+            window.open(fileUrl, "_blank").focus();
+        } else {
+            document.getElementById("downloader").src = fileUrl;
+        }
+        
         setIsFinished(true);
 
         // allow the browser to fetch the file
@@ -118,7 +127,7 @@ export function ExportForm() {
                 <IconFileDownload />
                 <AlertTitle>Export Complete</AlertTitle>
                 <AlertDescription>
-                Your file will now start downloading.
+                Your file will now start downloading. If it doesn't, <a href={downloadUrl} target="_blank">click here</a>.
                 </AlertDescription>
             </Alert>
         }
