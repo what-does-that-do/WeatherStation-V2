@@ -115,6 +115,10 @@ export default function Dashboard() {
       setConnectingMsg("Awaiting data...");
     }
 
+    sse.onerror = e => {
+      setConnectingMsg("Connection error. Try refreshing.")
+    }
+
     sse.onmessage = e => {
       setIsConnecting(false);
 
