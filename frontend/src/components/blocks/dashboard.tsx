@@ -157,7 +157,7 @@ export default function Dashboard() {
             id = valueExpMap.wind.length - 1;
           }
           
-          const vep = valueAExp;
+          const vep = valueExp;
           vep[sensor] = valueExpMap.wind[id];
           setValueExp(vep);
         } else if (sensor == "wind_direction") {
