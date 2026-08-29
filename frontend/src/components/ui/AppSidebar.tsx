@@ -12,7 +12,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-import { IconLayoutDashboard, IconUpload } from '@tabler/icons-react';
+import { IconLayoutDashboard, IconPower, IconSettings, IconUpload } from '@tabler/icons-react';
 
 type AppSidebarProps = {
   children?: ReactNode,
@@ -72,6 +72,14 @@ export default function AppSidebar({ children, title }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<a href="/power" />}>
+                  <IconPower stroke={2} />
+                  Power
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
 

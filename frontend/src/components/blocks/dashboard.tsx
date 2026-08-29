@@ -2,8 +2,21 @@ import React, {useEffect, useState} from "react";
 import DataCard from "../ui/dataCard";
 import { Spinner } from "../ui/spinner";
 
-import { IconTemperature, IconWindsock, IconWind, IconMist, IconCloudRain, IconDroplet, IconDroplets, IconCloud, IconSnowflake, IconRadar, IconBolt, IconNavigation } from '@tabler/icons-react';
+import { IconTemperature, IconWindsock, IconWind, IconMist, IconCloudRain, IconDroplet, IconDroplets, IconCloud, IconSnowflake, IconRadar, IconBolt, IconNavigation, IconNetworkOff } from '@tabler/icons-react';
 import StaticCard from "../ui/staticCard";
+import { get_connection_host } from "@/scripts/station_connection.js"
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const degreesToDirections = {
   0: "N",
@@ -92,6 +105,7 @@ const valueExpMap = {
 export default function Dashboard() {
   const [isConnecting, setIsConnecting] = useState<boolean>(true);
   const [connectingMsg, setConnectingMsg] = useState<string>("Connecting...");
+  const [isConnectionErrorOpen, setConnectionErrorOpen] = useState<boolean>(false);
 
   const [values, setValues] = useState<Record<string,number>>({});
   const [timeGreeting, setTimeGreeting] = useState<string>("Hello.");
@@ -116,7 +130,7 @@ export default function Dashboard() {
     }
 
     sse.onerror = e => {
-      setConnectingMsg("Connection error. Try refreshing.")
+      setConnectionErrorOpen(true);
     }
 
     sse.onmessage = e => {
@@ -257,26 +271,48 @@ export default function Dashboard() {
     return () => sse.close();
   };
 
+  function reloadPage() {
+    window.location.reload();
+  }
+
+  function closeConnectionError() {
+    setConnectionErrorOpen(false);
+  }
+
   useEffect(() => {
-    fetch("http://weatherstation.local:8000/").then((response) => {
-      if (response.ok) {
-        setConnectingMsg("Connecting locally...");
-        connectSSE("http://weatherstation.local:8000");
-        console.log("Using local.")
+    async function connectToStation() {
+      const host = await get_connection_host();
+
+      if (host != null) {
+        connectSSE(host);
       } else {
-        setConnectingMsg("Connecting remotely...");
-        connectSSE("https://weatherapi.whatdoesthatdo.dev");
-        console.log("Using tunnel.")
+        setConnectionErrorOpen(true);
+        console.log("Cannot connect to weather station");
       }
-    }).catch((error) => {
-      console.log("Using tunnel - error with local.");
-      setConnectingMsg("Connecting remotely...")
-      connectSSE("https://weatherapi.whatdoesthatdo.dev");
-    })
+    }
+
+    connectToStation();
   }, []);
 
   return (
     <>
+      <AlertDialog defaultOpen={false} open={isConnectionErrorOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+              <IconNetworkOff />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Connection Error</AlertDialogTitle>
+            <AlertDialogDescription>
+              Unable to connect to the Weather Station. This can happen if either you or the Weather Station are not connected to the internet.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel variant="outline" onClick={closeConnectionError}>Dismiss</AlertDialogCancel>
+            <AlertDialogAction variant="default" onClick={reloadPage}>Retry</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="flex flex-row">
         <div className="grow" />
         <div className="">

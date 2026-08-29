@@ -2,10 +2,21 @@
 
 import React, {useEffect} from "react";
 import { addDays, format } from "date-fns"
-import { IconCalendar, IconCloud, IconCloudRain, IconDroplet, IconDroplets, IconFileAlert, IconFileDownload, IconInfoCircle, IconMist, IconNavigation, IconSnowflake, IconTemperature, IconWind, IconWindsock } from "@tabler/icons-react"
+import { IconCalendar, IconCloud, IconCloudRain, IconDroplet, IconDroplets, IconFileAlert, IconFileDownload, IconNetworkOff, IconInfoCircle, IconMist, IconNavigation, IconSnowflake, IconTemperature, IconWind, IconWindsock } from "@tabler/icons-react"
 import { type DateRange } from "react-day-picker"
 
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Field, FieldLabel } from "@/components/ui/field"
@@ -24,7 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Spinner } from "../ui/spinner"
-
+import { get_connection_host } from "@/scripts/station_connection.js"
 
 
 export function ExportForm() {
@@ -48,6 +59,8 @@ export function ExportForm() {
   const [isError, setIsError] = React.useState<boolean>(false);
   const [host, setHost] = React.useState<string>("");
   const [downloadUrl, setDownloadUrl] = React.useState<string>("");
+
+  const [isConnectionErrorOpen, setConnectionErrorOpen] = React.useState<boolean>(false);
 
   const dateFrom = date?.from ? format(date.from, "yyyy-MM-dd") + " 00:00:00" : "";
   const dateTo = date?.to ? format(date.to, "yyyy-MM-dd") + " 23:59:59" : dateFrom;
@@ -99,23 +112,49 @@ export function ExportForm() {
     });
   }
 
+  function reloadPage() {
+    window.location.reload();
+  }
+
+  function closeConnectionError() {
+    setConnectionErrorOpen(false);
+  }
+
   useEffect(() => {
-    fetch("http://weatherstation.local:8000/").then((response) => {
-    if (response.ok) {
-        setHost("http://weatherstation.local:8000")
-        console.log("Using local.")
-    } else {
-        setHost("https://weatherapi.whatdoesthatdo.dev");
-        console.log("Using tunnel.")
+    async function connectToStation() {
+        const host = await get_connection_host();
+
+        if (host != null) {
+            setHost(host);
+        } else {
+            setConnectionErrorOpen(true);
+            console.log("Cannot connect to weather station");
+        }
     }
-    }).catch((error) => {
-      console.log("Using tunnel - error with local.");
-      setHost("https://weatherapi.whatdoesthatdo.dev");
-    })
+    
+    connectToStation();
 }, []);
 
   return (
     <div className="w-100">
+        <AlertDialog defaultOpen={false} open={isConnectionErrorOpen}>
+            <AlertDialogContent size="sm">
+            <AlertDialogHeader>
+                <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                <IconNetworkOff />
+                </AlertDialogMedia>
+                <AlertDialogTitle>Connection Error</AlertDialogTitle>
+                <AlertDialogDescription>
+                Unable to connect to the Weather Station. This can happen if either you or the Weather Station are not connected to the internet.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel variant="outline" onClick={closeConnectionError}>Dismiss</AlertDialogCancel>
+                <AlertDialogAction variant="default" onClick={reloadPage}>Retry</AlertDialogAction>
+            </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+
         {isFinished && 
             <Alert className="max-w-md border-green-200 bg-green-50 text-green-900 dark:border-green-900 dark:bg-green-950 dark:text-green-50">
                 <IconFileDownload />
