@@ -3,3 +3,4 @@ redis
 weatherhat
 fastAPI[standard]
 openpyxl
+sdnotify

@@ -12,6 +12,9 @@ from objects import *
 from database import *
 import json
 from logger import Logger
+import sdnotify
+
+systemd = sdnotify.SystemdNotifier()
 
 log = Logger("data_collector")
 log.info("Started.")
@@ -22,8 +25,10 @@ def run_loop():
 
     db = Database(user="admin", logger=log)
     station = weatherhat.WeatherHAT()
+    systemd.notify("READY=1")
 
     while True:
+        systemd.notify("WATCHDOG=1") # notify systemd watchdog this script is running normally.
         currentMinute = int(datetime.now().strftime("%M"))
         weatherHistory = WeatherHistory()
 
@@ -35,6 +40,7 @@ def run_loop():
         # collect one minute of data from the sensors
         while currentMinute == int(datetime.now().strftime("%M")):
             station.update(interval=1.0) # update sensors every sec
+            systemd.notify("WATCHDOG=1") # notify systemd watchdog this script is running normally.
 
             if station.updated_wind_rain:
                 # push per sec data to sse
@@ -75,4 +81,4 @@ if __name__ == "__main__":
     try:
         run_loop()
     except Exception as Argument:
-        log.logger.exception()
+        log.logger.exception(Argument)
