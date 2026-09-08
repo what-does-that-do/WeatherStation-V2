@@ -4,9 +4,9 @@ export async function get_connection_host() {
 
     async function test_connection(host) {
         try {
-            const response = await fetch(host+"/")
+            const response = await fetch(host+"")
             console.log("Response from "+host+" is below.\n"+response.status)
-            return response.ok
+            return true
         } catch (error) {
             console.log("Error when trying "+host+" is below.\n"+error)
             return false
