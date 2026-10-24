@@ -149,7 +149,7 @@ export default function Dashboard() {
           vep["temperature"] = valueExpMap.temperature[id];
           setValueExp(vep);
         } else if ((sensor.includes("wind")) && (sensor != "wind_direction")) {
-          let id = Math.floor(data[sensor] / 10);
+          let id = Math.floor((data[sensor] + 5) / 10);
 
           if (id < 0) {
             id = 0;
