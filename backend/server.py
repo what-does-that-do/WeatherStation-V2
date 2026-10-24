@@ -4,6 +4,7 @@ from fastapi.responses import StreamingResponse, FileResponse
 import redis.asyncio as aioredis
 from fastapi.middleware.cors import CORSMiddleware
 from database import *
+from subprocess import Popen
 
 from datetime import datetime
 from openpyxl import Workbook
@@ -105,3 +106,19 @@ def get_file(file: str):
     log.info("Returned file "+"/tmp/weatherstation/"+file)
     # return files from temp
     return FileResponse("/tmp/weatherstation/"+file, filename=file)
+
+@app.get("/sys/restart")
+def restart():
+    log.info("Reboot initiated by user")
+    Popen("sleep 2 && reboot", shell=True)
+    return "ok"
+
+@app.get("/sys/poweroff")
+def poweroff():
+    log.info("Shutdown initiated by user")
+    Popen("sleep 2 && shutdown -h now", shell=True)
+    return "ok"
+
+@app.get("/sys/cleanmode")
+def cleanmode():
+    return "false"
