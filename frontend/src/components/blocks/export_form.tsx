@@ -101,6 +101,8 @@ export function ExportForm() {
         
         setIsFinished(true);
 
+        window.open(fileUrl, '_blank').focus();
+
         // allow the browser to fetch the file
         setTimeout(() => {
             setIsExporting(false);
