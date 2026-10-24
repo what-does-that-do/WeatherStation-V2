@@ -40,7 +40,7 @@ def run_loop():
                 # push per sec data to sse
                 r.publish("live", json.dumps({
                     "temperature": int(round(station.temperature, 0)),
-                    "wind_speed": round(station.wind_speed, 1),
+                    "wind_speed": round(station.wind_speed*2.237, 1),
                     "wind_direction": int(station.wind_direction),
                     "dew_point": int(round(station.dewpoint, 0)),
                     "pressure": int(station.pressure),
@@ -52,7 +52,7 @@ def run_loop():
                 }))
 
                 # add data to weather history
-                weatherHistory.write_data(station.temperature, station.wind_speed, station.wind_direction, station.dewpoint, station.pressure, station.relative_humidity, station.rain_total)
+                weatherHistory.write_data(station.temperature, station.wind_speed*2.237, station.wind_direction, station.dewpoint, station.pressure, station.relative_humidity, station.rain_total)
 
             sleep(1.0)
 
