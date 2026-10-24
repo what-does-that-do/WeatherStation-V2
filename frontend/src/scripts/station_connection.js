@@ -19,12 +19,7 @@ export async function get_connection_host() {
         return LOCAL_HOST
     } else {
         console.log("Local failed")
-        if (await test_connection(TUNNEL_HOST)) {
-            console.log("Using tunnel")
-            return TUNNEL_HOST
-        } else {
-            console.log("No connection available")
-            return null
-        }
+        // cannot check tunnel as fetch is blocked by CORS
+        return TUNNEL_HOST
     }
 }
