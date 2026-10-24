@@ -1,5 +1,5 @@
 import { Switch } from "@/components/ui/switch";
-import { IconNetworkOff, IconPower, IconReload, IconStethoscope } from "@tabler/icons-react";
+import { IconNetworkOff, IconPower, IconReload, IconStethoscope, IconCheck } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "@/components/ui/field";
 import {
@@ -33,6 +33,7 @@ export default function PowerForm() {
     const [isPowerOffWarningOpen, setIsPowerOffWarningOpen] = useState<boolean>(false);
     const [hasRequestSent, setRequestSent] = useState<boolean>(false);
     const [isRestartWarningOpen, setIsRestartWarningOpen] = useState<boolean>(false);
+    const [isRestartCompleteOpen, setIsRestartCompleteOpen] = useState<boolean>(false);
 
     const [isPoweringOff, setisPoweringOff] = useState<boolean>(false);
     const [isRestarting, setIsRestarting] = useState<boolean>(false);
@@ -89,6 +90,7 @@ export default function PowerForm() {
         const restartedHost = await get_connection_host();
         if (restartedHost != null) {
             closeAllDialogs();
+            setIsRestartCompleteOpen(true);
         } else {
             setTimeout(() => {
                 checkIfRestarted();
@@ -169,6 +171,23 @@ export default function PowerForm() {
                     :
                         <AlertDialogAction variant="destructive" onClick={powerOff}>Power Off</AlertDialogAction>
                     }
+                </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog defaultOpen={false} open={isRestartCompleteOpen}>
+                <AlertDialogContent size="sm">
+                <AlertDialogHeader>
+                    <AlertDialogMedia className="bg-green-600/10 text-green-600 dark:bg-green-600/20 dark:text-green-600">
+                        <IconCheck />
+                    </AlertDialogMedia>
+                    <AlertDialogTitle>Restart Complete</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        The weather station has been restarted successfully.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogAction variant="default" onClick={closeAllDialogs}>OK</AlertDialogAction>
                 </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
