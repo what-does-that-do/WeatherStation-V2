@@ -127,6 +127,7 @@ export default function PowerForm() {
         setRequestSent(false);
         setisPoweringOff(false);
         setIsRestarting(false);
+        setIsRestartCompleteOpen(false);
     }
 
     useEffect(() => {
@@ -187,7 +188,7 @@ export default function PowerForm() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogAction variant="default" onClick={closeAllDialogs}>OK</AlertDialogAction>
+                    <AlertDialogAction variant="default" className="col-span-full w-full" onClick={closeAllDialogs}>OK</AlertDialogAction>
                 </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
